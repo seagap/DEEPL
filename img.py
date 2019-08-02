@@ -64,3 +64,4 @@ plt.title('Training and validation loss')
 plt.legend()
 plt.show()
 #test
+#ok
