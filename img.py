@@ -32,7 +32,7 @@ for data_batch, labels_batch in validation_generator:
     break
 
 model = models.Sequential()
-model.add(layers.Conv2D(32, (3, 3), activation='relu',
+model.add(layers.Conv2D(16, (3, 3), activation='relu',
     input_shape=(20, 20, 3)))
 model.add(layers.Flatten())
 model.add(layers.Dense(1, activation='sigmoid'))
@@ -45,7 +45,7 @@ model.compile(loss='binary_crossentropy',
 history = model.fit_generator(
     generator=train_generator,
     verbose=1,
-    steps_per_epoch=3000,
+    steps_per_epoch=1000,
     epochs=5,
     validation_data=validation_generator,
     validation_steps=500)
