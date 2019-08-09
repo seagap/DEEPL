@@ -3,22 +3,27 @@ from keras import layers
 from keras import models
 import matplotlib.pyplot as plt
 from keras import optimizers
+import os
 
-train_datagen = ImageDataGenerator(rescale=1./255)
-test_datagen = ImageDataGenerator(rescale=1./255)
+# os.environ["TF_CPP_MIN_LOG_LEVEL"]='1' # 这是默认的显示等级，显示所有信息  
+# os.environ["TF_CPP_MIN_LOG_LEVEL"]='2' # 只显示 warning 和 Error   
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = '3'  # 只显示 Erro
 
-train_dir='D:\cv\\trainset'
+train_datagen = ImageDataGenerator(rescale=1. / 255)
+test_datagen = ImageDataGenerator(rescale=1. / 255)
+
+train_dir = 'D:\cv\\trainset'
 train_generator = train_datagen.flow_from_directory(
     train_dir,
-    target_size=(20,20),
+    target_size=(20, 20),
     batch_size=1000,
     class_mode='binary')
 
-validation_dir='D:\cv\\validation'
+validation_dir = 'D:\cv\\validation'
 validation_generator = test_datagen.flow_from_directory(
     validation_dir,
-    target_size=(20,20),
-    batch_size=100,
+    target_size=(20, 20),
+    batch_size=1000,
     class_mode='binary')
 
 for data_batch, labels_batch in train_generator:
@@ -33,22 +38,22 @@ for data_batch, labels_batch in validation_generator:
 
 model = models.Sequential()
 model.add(layers.Conv2D(16, (3, 3), activation='relu',
-    input_shape=(20, 20, 3)))
+                        input_shape=(20, 20, 3)))
 model.add(layers.Flatten())
-model.add(layers.Dense(1, activation='sigmoid'))
+model.add(layers.Dense((1,1), activation='sigmoid'))
 print(model.summary())
 
-model.compile(loss='binary_crossentropy',
-    optimizer=optimizers.RMSprop(lr=1e-4),
-    metrics=['acc'])
-
+model.compile(loss='categorical_crossentropy',
+              optimizer=optimizers.RMSprop(lr=1e-4),
+              metrics=['acc'])
+print(train_generator.class_indices)
 history = model.fit_generator(
     generator=train_generator,
     verbose=1,
     steps_per_epoch=1000,
-    epochs=5,
+    epochs=1,
     validation_data=validation_generator,
-    validation_steps=500)
+    validation_steps=1000)
 print(history)
 model.save('cats_and_dogs_small_1.h5')
 
@@ -67,5 +72,5 @@ model.save('cats_and_dogs_small_1.h5')
 # plt.title('Training and validation loss')
 # plt.legend()
 # plt.show()
-#test
-#ok
+# test
+# ok
