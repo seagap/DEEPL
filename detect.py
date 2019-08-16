@@ -3,10 +3,10 @@ import cv2 as cv
 import numpy as np
 
 # model = load_model("D:\cv\DEEPL\s.h5")#正负样本
-model = load_model("D:\cv\DEEPL\s5.h5")  # 单正样本
+model = load_model("D:\cv\DEEPL\s7.h5")  # 单正样本
 print(model.summary())
 
-src0 = cv.imread('0.jpg')
+src0 = cv.imread('6.jpg')
 src0 = cv.resize(src0, (20, 20))
 src0 = src0 / 255.
 test1 = np.array([src0])

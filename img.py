@@ -4,6 +4,8 @@ from keras import models
 import matplotlib.pyplot as plt
 from keras import optimizers
 import os
+import keras.regularizers as regularizers
+from keras.layers import Dropout
 
 # os.environ["TF_CPP_MIN_LOG_LEVEL"]='1' # 这是默认的显示等级，显示所有信息  
 # os.environ["TF_CPP_MIN_LOG_LEVEL"]='2' # 只显示 warning 和 Error   
@@ -16,14 +18,14 @@ train_dir = 'D:\cv\\trainset'
 train_generator = train_datagen.flow_from_directory(
     train_dir,
     target_size=(20, 20),
-    batch_size=1000,
+    batch_size=100,
     class_mode='binary')
 
 validation_dir = 'D:\cv\\validation'
 validation_generator = test_datagen.flow_from_directory(
     validation_dir,
     target_size=(20, 20),
-    batch_size=1000,
+    batch_size=100,
     class_mode='binary')
 
 for data_batch, labels_batch in train_generator:
@@ -33,27 +35,31 @@ for data_batch, labels_batch in train_generator:
 
 for data_batch, labels_batch in validation_generator:
     print('vadata batch shape:', data_batch.shape)
-    print('valabels batch shape:', labels_batch.shape)
+    print('valabels batch shape:', labels_batch)
     break
 
 model = models.Sequential()
 model.add(layers.Conv2D(16, (3, 3), activation='relu',
                         input_shape=(20, 20, 3)))
+model.add(layers.MaxPool2D(5,5))
 model.add(layers.Flatten())
-model.add(layers.Dense((1,1), activation='sigmoid'))
+#model.add(layers.Dense(32, activation='relu',kernel_regularizer=regularizers.l1(10)))
+model.add(layers.Dense(16, activation='relu',kernel_regularizer=regularizers.l1(10)))
+model.add(layers.Dense(8, activation='relu'))
+model.add(layers.Dense(2, activation='softmax'))
 print(model.summary())
 
-model.compile(loss='categorical_crossentropy',
+model.compile(loss='sparse_categorical_crossentropy',
               optimizer=optimizers.RMSprop(lr=1e-4),
               metrics=['acc'])
 print(train_generator.class_indices)
 history = model.fit_generator(
     generator=train_generator,
     verbose=1,
-    steps_per_epoch=1000,
-    epochs=1,
+    steps_per_epoch=100,
+    epochs=10,
     validation_data=validation_generator,
-    validation_steps=1000)
+    validation_steps=1)
 print(history)
 model.save('cats_and_dogs_small_1.h5')
 
