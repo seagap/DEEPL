@@ -41,10 +41,10 @@ for data_batch, labels_batch in validation_generator:
 model = models.Sequential()
 model.add(layers.Conv2D(16, (3, 3), activation='relu',
                         input_shape=(20, 20, 3)))
-model.add(layers.MaxPool2D(5,5))
+model.add(layers.MaxPool2D(2,2))
 model.add(layers.Flatten())
 #model.add(layers.Dense(32, activation='relu',kernel_regularizer=regularizers.l1(10)))
-model.add(layers.Dense(16, activation='relu',kernel_regularizer=regularizers.l1(10)))
+model.add(layers.Dense(16, activation='relu'))
 model.add(layers.Dense(8, activation='relu'))
 model.add(layers.Dense(2, activation='softmax'))
 print(model.summary())
@@ -57,7 +57,7 @@ history = model.fit_generator(
     generator=train_generator,
     verbose=1,
     steps_per_epoch=100,
-    epochs=10,
+    epochs=6,
     validation_data=validation_generator,
     validation_steps=1)
 print(history)
