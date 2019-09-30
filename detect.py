@@ -5,23 +5,18 @@ import numpy as np
 # model = load_model("D:\cv\DEEPL\s.h5")#正负样本
 model = load_model("D:\cv\DEEPL\s8.h5")  # 单正样本
 #print(model.summary())
-src0 = cv.imread('6.jpg')
-src0 = cv.resize(src0, (20, 20))
-src0 = src0 / 255.
-test1 = np.array([src0])
-src1 = cv.imread('3.jpg')
-src1 = cv.resize(src1, (20, 20))
-src1 = src1 / 255.
-test2 = np.array([src0,src1])
-src2 = cv.imread('7.jpg')
-src2 = cv.resize(src2, (20, 20))
-src2 = src2 / 255.
-test3 = np.array([src2])
-test = np.array(test1)
-print(test2)
+sample=np.zeros(shape=(1,20,20,3))
+for i in range(1,19):
+    strs='.\img\\s (' + str(i) + ').jpg'
+    temp = cv.imread(strs)
+    temp = cv.resize(temp, (20, 20))
+    temp = [temp / 255.]
+    sample=np.concatenate((sample,temp),axis = 0)
+print(np.shape(sample))
+# print(sample)
 # print("result:")
 # result = model.predict(test)
 # print(result)
-print(model.predict(test2, batch_size=1, verbose=1))
+print(model.predict(sample, batch_size=1, verbose=1))
 # print(np.argmax(model.predict(test2)))
 # print(np.argmax(model.predict(test3)))
