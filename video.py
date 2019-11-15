@@ -27,5 +27,4 @@ while (True):
         break
 frame = video.read()  # 捕获一帧图像
 print(frame[1].shape)
-cv.waitKey(0)
-cv.destroyAllWindows()
+
