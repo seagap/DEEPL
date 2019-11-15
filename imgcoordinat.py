@@ -10,8 +10,6 @@ counter = 0
 hights = img.shape[0]
 widths = img.shape[1]
 traindata = shelve.open("traindata")
-print(img.shape[0])
-
 def on_EVENT_LBUTTONDOWN(event, x, y, flags, param):
     global counter, imgid, img, coordnt
     if event == cv2.EVENT_LBUTTONDOWN:
@@ -25,7 +23,6 @@ def on_EVENT_LBUTTONDOWN(event, x, y, flags, param):
             coordnt = np.zeros(shape=(2, 3))
             imgid += 1
             img = cv2.imread("./img/s (" + str(imgid) + ").jpg")
-
         else:
             for i in range(0, 2):
                 if coordnt[0][i] == 0:
@@ -49,6 +46,12 @@ def on_EVENT_LBUTTONDOWN(event, x, y, flags, param):
         except Exception:
             print("there is no more img")
             cv2.destroyAllWindows()
+    elif event == cv2.EVENT_RBUTTONDOWN:
+        print("test")
+        img = cv2.imread("./img/s (" + str(imgid) + ").jpg")
+        cv2.imshow("image", img)
+        coordnt = np.zeros(shape=(2, 3))
+        print(coordnt)
 cv2.namedWindow("image")
 cv2.setMouseCallback("image", on_EVENT_LBUTTONDOWN)
 cv2.imshow("image", img)
