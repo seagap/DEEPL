@@ -13,9 +13,9 @@ for i in range(1, 5001):
     img = np.ones((x, y, 3), dtype=np.uint8) * 255
     img[a:b, c:d] = np.zeros((b - a, d - c, 3), np.uint8)
     # cv2.waitKey(0)
-    cv2.imwrite('./generousimg/' + str(i) + '.jpg', img)
-    templist = {"x": x, "y": y, "a": a, "b": b, "c": c, "d": d, "cenx": ((a + b) / (2 * x)),
-                "ceny": ((c + d) / (2 * y))}
+    cv2.imwrite('../generousimg/' + str(i) + '.jpg', img)
+    templist = {"x": x, "y": y, "a": a, "b": b, "c": c, "d": d,  "cenx": ((c + d) / (2 * y)),
+                "ceny": ((a + b) / (2 * x))}
     imginfo[str(i)] = templist
     print(i,templist)
 imginfo.close()
