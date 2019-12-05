@@ -43,7 +43,6 @@ def generdata():
 # print(np.shape(img))
 
 def mutilayers(x):
-    kernel = tf.constant([[1, 1, 1], [1, 1, 1], [1, 1, 1]])
     ly1 = layers.conv2d(x, kernel_size=tuple([3, 3]), stride=([3, 3]), padding='SAME',
                         weights_initializer=tf.initializers.constant([[[-1, -1, -1], [-1, -1, -1], [-1, -1, -1]],
                                                                       [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
@@ -66,12 +65,24 @@ def mutilayers(x):
                         num_outputs=1, trainable=False, )
     ly5 = ly1 + ly2 + ly3 + ly4
     ly6 = layers.max_pool2d(ly5, kernel_size=([3, 3]))
-    ly7 = layers.conv2d(ly6, kernel_size=tuple([3, 3]), stride=([1, 1]), padding='SAME',
-                        num_outputs=1)
-    ly8 = layers.max_pool2d(ly7, kernel_size=([3, 3]))
-    ly9 = layers.conv2d(ly8, kernel_size=tuple([24, 41]), stride=([1, 1]), padding='valid',
-                        num_outputs=1)
-    return ly9
+    ly7 = layers.fully_connected(ly6,activation_fn=tf.nn.relu,num_outputs=1)
+    # ly8=tf.reshape(ly7,[9,-1,16])
+    # right layer
+    ly8 = tf.reshape(ly6, [9, -1, 1])
+    ly9 = layers.fully_connected(ly8,activation_fn=tf.nn.relu, num_outputs=1)
+    test=tf.reshape(ly9,[9,-1])
+    ly10 = layers.fully_connected(test,activation_fn=tf.nn.relu, num_outputs=3)
+    # leftout=layers.dense_to_sparse()
+    #kernel
+    # ly11 = layers.fully_connected(ly6,activation_fn=tf.nn.relu, num_outputs=256)
+    # ly12 = layers.fully_connected(ly11, activation_fn=tf.nn.relu, num_outputs=256)
+    # ly13 = tf.reshape(ly12, [9, 16, -1])
+    # outmatrix1=tf.matmul(ly8,ly13)
+    # outmatrix2 = tf.matmul(outmatrix1, ly10)
+    # outputs=layers.conv2d(ly6,kernel_size=tuple([49,83]), stride=([1,1]), padding='SAME',
+    #                     weights_initializer=tf.initializers.constant(outmatrix2),num_outputs=1)
+    # ly10=ly9[0][0][0][0]   #Dose it have batch var ?  should not have
+    return ly10
 
 
 #
@@ -92,18 +103,19 @@ with graph.as_default():
     # print(img)
 
     y_hat = mutilayers(x / 255.0)
-    loss = y_hat[0][0][0][0] - y
-    train = tf.train.AdamOptimizer(learning_rate=eta).minimize(loss)
+    loss = y_hat - y
+    # train = tf.train.AdamOptimizer(learning_rate=eta).minimize(loss)
     init = tf.global_variables_initializer()
     with tf.Session() as sess:
         sess.run(init)
-        for i in range(1, 10):
+        for i in range(1, 2):
             x_batch, y_batch = generdata()
-            print(np.shape(x_batch))
-            print(np.shape(y_batch))
-            sd = sess.run([loss, train], feed_dict={x: x_batch, y: y_batch})
-correct_prediction = tf.equal(y_hat, y)
-accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-xtest_batch, ytest_batch = generdata()
-print("Accuracy：", accuracy.eval({x: xtest_batch, y: ytest_batch}))
+            # print(np.shape(x_batch))
+            # print(np.shape(y_batch))
+            # sd = sess.run([loss, train], feed_dict={x: x_batch, y: y_batch})
+            print(np.shape(sess.run(y_hat, feed_dict={x: x_batch})))
+# correct_prediction = tf.equal(y_hat, y)
+# accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+# xtest_batch, ytest_batch = generdata()
+# print("Accuracy：", accuracy.eval({x: xtest_batch, y: ytest_batch}))
 # file_writer = tf.summary.FileWriter('./log3', graph)
