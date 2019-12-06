@@ -66,7 +66,7 @@ def mutilayers(x):
     ly5 = ly1 + ly2 + ly3 + ly4
     ly6 = layers.max_pool2d(ly5, kernel_size=([3, 3]))
     ly7 = tf.reshape(ly6, [-1, 4067])
-    return ly7
+    return ly7,ly6
 
 
 def leftM(x):
@@ -104,24 +104,24 @@ with graph.as_default():
     y = tf.placeholder(dtype=tf.float64, shape=[None], name='y')
     # img.dtype='float'
     # print(img)
-    featuremap = mutilayers(x / 255.0)
+    featuremap,_ = mutilayers(x / 255.0)
+    _=tf.reshape(_,[-1,49,83])
     matrixs =tf.matmul(tf.matmul(leftM(featuremap),kernelM(featuremap)),rightM(featuremap))
-    y_hat=matrixs*x
-    loss = y_hat - y
-    train = tf.train.AdamOptimizer(learning_rate=eta).minimize(loss)
+    y_hat=layers.fully_connected(matrixs*_ ,1,tf.sparse_softmax)
+    loss = tf.reduce_mean(y_hat)
+    # train = tf.train.AdamOptimizer(learning_rate=eta).minimize(loss)
     init = tf.global_variables_initializer()
-    '''
     with tf.Session() as sess:
         sess.run(init)
         for i in range(1, 2):
             x_batch, y_batch = generdata()
             # print(np.shape(x_batch))
             # print(np.shape(y_batch))
-            sd = sess.run([loss, train], feed_dict={x: x_batch, y: y_batch})
-            # print(np.shape(sess.run(y_hat, feed_dict={x: x_batch})))
-    '''
+            # sd = sess.run([loss, train], feed_dict={x: x_batch, y: y_batch})
+            print(np.shape(sess.run(matrixs, feed_dict={x: x_batch})))
+
 # correct_prediction = tf.equal(y_hat, y)
 # accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 # xtest_batch, ytest_batch = generdata()
 # print("Accuracy：", accuracy.eval({x: xtest_batch, y: ytest_batch}))
-    file_writer = tf.summary.FileWriter('./log4', graph)
+#     file_writer = tf.summary.FileWriter('./log4', graph)
