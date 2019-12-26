@@ -22,9 +22,11 @@ def generdata():
     ydata = []
     for i in range(epoch * 10 + 1, (epoch + 1) * 10):  # epoch * 10+1, (epoch + 1) * 10
         img = cv2.imread('../generousimg/' + str(i) + '.jpg')
+        # img = cv2.imread('./sf.jpg')
         img = cv2.resize(img, (500, 300))
         imgdata.append(img)
-        ydata.append(imgcenter[str(i)]['cenx'])
+        # ydata.append(imgcenter[str(i)]['cenx'])
+        ydata.append(str(i))
     epoch += 1
     return imgdata, ydata
 
@@ -66,7 +68,7 @@ def mutilayers(x):
     ly5 = ly1 + ly2 + ly3 + ly4
     ly6 = layers.max_pool2d(ly5, kernel_size=([3, 3]))
     ly7 = tf.reshape(ly6, [-1, 4067])
-    return ly7,ly6
+    return ly7,ly5
 
 
 def leftM(x):
@@ -105,10 +107,10 @@ with graph.as_default():
     # img.dtype='float'
     # print(img)
     featuremap,_ = mutilayers(x / 255.0)
-    _=tf.reshape(_,[-1,49,83])
-    matrixs =tf.matmul(tf.matmul(leftM(featuremap),kernelM(featuremap)),rightM(featuremap))
-    y_hat=layers.fully_connected(matrixs*_ ,1,tf.sparse_softmax)
-    loss = tf.reduce_mean(y_hat)
+    # _=tf.reshape(_,[-1,49,83])
+    # matrixs =tf.matmul(tf.matmul(leftM(featuremap),kernelM(featuremap)),rightM(featuremap))
+    # y_hat=layers.fully_connected(matrixs*_ ,1,tf.sparse_softmax)
+    # loss = tf.reduce_mean(y_hat)
     # train = tf.train.AdamOptimizer(learning_rate=eta).minimize(loss)
     init = tf.global_variables_initializer()
     with tf.Session() as sess:
@@ -118,7 +120,11 @@ with graph.as_default():
             # print(np.shape(x_batch))
             # print(np.shape(y_batch))
             # sd = sess.run([loss, train], feed_dict={x: x_batch, y: y_batch})
-            print(np.shape(sess.run(matrixs, feed_dict={x: x_batch})))
+            img=sess.run(_, feed_dict={x: x_batch})
+            cv2.namedWindow('ss', cv2.WINDOW_NORMAL)
+            cv2.imshow('ss',img[0])
+            cv2.waitKey(0)
+            cv2.imwrite('output.jpg',img[0])
 
 # correct_prediction = tf.equal(y_hat, y)
 # accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
