@@ -80,6 +80,7 @@ init = tf.global_variables_initializer()
 s = [100]
 saver=tf.train.Saver()
 with tf.Session() as sess:
+    saver.restore(sess,save_path="./models/model")
     sess.run(init)
     var = tf.trainable_variables()
     print(var)

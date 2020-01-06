@@ -79,7 +79,8 @@ init = tf.global_variables_initializer()
 s = [100]
 saver=tf.train.Saver()
 with tf.Session() as sess:
-    sess.run(init)
+    saver.restore(sess,save_path="./models/model")
+    # sess.run(init)
     var = tf.trainable_variables()
     print(var)
     while (s[0] >50):
